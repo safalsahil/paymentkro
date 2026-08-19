@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:payment_karo/screens/profile_screen.dart';
+import 'package:payment_karo/screens/search_rechrge_screen.dart';
 import '../constants/AppColors.dart';
 import 'bill_screen.dart';
 
 class _QuickAction {
-  final IconData icon;
+  final Image image;
   final String label;
 
-  const _QuickAction({required this.icon, required this.label});
+  const _QuickAction({required this.image, required this.label});
 }
 
 class _Transaction {
@@ -35,15 +37,47 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _navIndex = 0;
 
-  final List<_QuickAction> _quickActions = const [
-    _QuickAction(icon: Icons.phone_android_rounded, label: 'Mobile'),
-    _QuickAction(icon: Icons.live_tv_rounded, label: 'DTH'),
-    _QuickAction(icon: Icons.bolt_rounded, label: 'Electricity'),
-    _QuickAction(icon: Icons.wifi_rounded, label: 'Broadband'),
-    _QuickAction(icon: Icons.local_gas_station_rounded, label: 'Gas'),
-    _QuickAction(icon: Icons.water_drop_rounded, label: 'Water'),
-    _QuickAction(icon: Icons.credit_card_rounded, label: 'Card Bill'),
-    _QuickAction(icon: Icons.apps_rounded, label: 'More'),
+  final List<_QuickAction> _quickActionsMobile = const [
+    _QuickAction(
+      image: Image(
+        image: AssetImage('lib/assets/icons/vI.png'),
+        fit: BoxFit.fill,
+      ),
+      label: "VI",
+    ),
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/bsnlimg.png')),
+      label: "BSNL",
+    ),
+
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/airtel.png')),
+      label: 'Airtel',
+    ),
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/jio.png')),
+      label: 'Jio',
+    ),
+  ];
+  final List<_QuickAction> _quickActionsDishes = const [
+
+
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/dishtv.png')),
+      label: 'DTH',
+    ),
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/airtel.png')),
+      label: 'Airtel',
+    ),
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/jiofiber.png')),
+      label: 'JioFiber',
+    ),
+    _QuickAction(
+      image: Image(image: AssetImage('lib/assets/icons/sundirect.png')),
+      label: 'Sun Direct',
+    ),
   ];
 
   final List<_Transaction> _transactions = const [
@@ -82,9 +116,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         index: _navIndex,
         children: [
           _buildHomeView(),
-          BillScreen(),
-          const Center(child: Text('Wallet', style: TextStyle(color: Colors.white))),
-          const Center(child: Text('Profile', style: TextStyle(color: Colors.white))),
+          const BillScreen(),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _buildBottomNav(),
@@ -105,11 +138,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             _buildTopBar(),
             const SizedBox(height: 20),
-            _buildBalanceCard(),
-            const SizedBox(height: 28),
-            _buildSectionHeader('Quick Actions'),
+            _buildSectionHeader('Mobile Recharge'),
             const SizedBox(height: 14),
-            _buildQuickActionsGrid(),
+            _buildQuickActionsGridMobile(),
+            const SizedBox(height: 28),
+            _buildSectionHeader('Dish Recharge'),
+            const SizedBox(height: 14),
+            _buildQuickActionsGridDishes(),
             const SizedBox(height: 28),
             _buildPromoBanner(),
             const SizedBox(height: 28),
@@ -122,7 +157,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------- Top bar ----------
   Widget _buildTopBar() {
     return Row(
       children: [
@@ -203,130 +237,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------- Balance card ----------
-  Widget _buildBalanceCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.red, AppColors.redDark],
-        ),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.red.withOpacity(0.25),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Wallet Balance',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'Paymentkro',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            '₹2,480.00',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 34,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _balanceButton(
-                  icon: Icons.add_rounded,
-                  label: 'Add Money',
-                  filled: true,
-                  onTap: () {},
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _balanceButton(
-                  icon: Icons.history_rounded,
-                  label: 'History',
-                  filled: false,
-                  onTap: () {},
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _balanceButton({
-    required IconData icon,
-    required String label,
-    required bool filled,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: filled ? AppColors.black : Colors.transparent,
-          border: filled ? null : Border.all(color: Colors.white54, width: 1.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 17, color: Colors.white),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ---------- Section header ----------
   Widget _buildSectionHeader(String title, {String? actionLabel}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -351,13 +261,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
   }
-
-  // ---------- Quick actions grid ----------
-  Widget _buildQuickActionsGrid() {
+  Widget _buildQuickActionsGridDishes() {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _quickActions.length,
+      itemCount: _quickActionsDishes.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         mainAxisSpacing: 18,
@@ -365,7 +273,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         childAspectRatio: 0.8,
       ),
       itemBuilder: (context, index) {
-        final action = _quickActions[index];
+        final action = _quickActionsDishes[index];
         return InkWell(
           onTap: () {},
           borderRadius: BorderRadius.circular(16),
@@ -375,11 +283,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceBlack,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.border, width: 1),
                 ),
-                child: Icon(action.icon, color: AppColors.red, size: 24),
+                padding: const EdgeInsets.all(8),
+                child: action.image,
               ),
               const SizedBox(height: 8),
               Text(
@@ -398,7 +307,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------- Promo banner ----------
+  Widget _buildQuickActionsGridMobile() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _quickActionsMobile.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        mainAxisSpacing: 18,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.8,
+      ),
+      itemBuilder: (context, index) {
+        final action = _quickActionsMobile[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RechargePlansScreen(operatorName: '',)),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border, width: 1),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: action.image,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                action.label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: AppColors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildPromoBanner() {
     return Container(
       width: double.infinity,
@@ -446,7 +405,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------- Transactions ----------
   Widget _buildTransactionTile(_Transaction tx) {
     final Color amountColor = tx.isDebit ? AppColors.white : const Color(0xFF35C46A);
     final String amountPrefix = tx.isDebit ? '-' : '+';
@@ -499,12 +457,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------- Bottom nav ----------
   Widget _buildBottomNav() {
     final items = const [
       (icon: Icons.home_rounded, label: 'Home'),
       (icon: Icons.receipt_long_rounded, label: 'Bills'),
-      (icon: Icons.account_balance_wallet_rounded, label: 'Wallet'),
       (icon: Icons.person_outline_rounded, label: 'Profile'),
     ];
 
