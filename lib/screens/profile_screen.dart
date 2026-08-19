@@ -21,10 +21,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker picker = ImagePicker();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     nameController.dispose();
     super.dispose();
   }
+
+
 
   void logout() {
     showDialog(
@@ -57,12 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Helper to pick image from camera or gallery
+  // Helper to pick image from camera or gallery with proper constraints
   Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await picker.pickImage(
         source: source,
-        imageQuality: 50,
+        maxWidth: 512,  // Standard resolution for profile pictures
+        maxHeight: 512,
+        imageQuality: 75, // Reduce file size without visible quality loss
       );
 
       if (image != null) {
@@ -72,21 +81,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       debugPrint("Error picking image: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.red,
+            content: Text("Error picking image: $e"),
+          ),
+        );
+      }
     }
   }
 
-  // Show bottom sheet to choose image source
+  // Proper UI for selecting image source
   void _showImageSourceDialog() {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surfaceBlack,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -98,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -118,6 +135,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _pickImage(ImageSource.gallery);
                       },
                     ),
+                    if (profileImage != null)
+                      _imageSourceItem(
+                        icon: Icons.delete_outline_rounded,
+                        label: "Remove",
+                        onTap: () {
+                          setState(() {
+                            profileImage = null;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
                   ],
                 ),
               ],
@@ -135,19 +163,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.border),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.background,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Icon(icon, color: AppColors.red, size: 28),
             ),
-            child: Icon(icon, color: AppColors.red, size: 30),
-          ),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(color: AppColors.white)),
-        ],
+            const SizedBox(height: 10),
+            Text(label, style: const TextStyle(color: AppColors.white, fontSize: 13)),
+          ],
+        ),
       ),
     );
   }
